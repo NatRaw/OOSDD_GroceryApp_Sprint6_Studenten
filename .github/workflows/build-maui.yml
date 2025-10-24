@@ -11,22 +11,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use .NET 8 SDK
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-          global-json-file: global.json
-
       - name: Show SDK
         run: dotnet --info
-
       - name: Install MAUI Android workload
         run: dotnet workload install maui maui-android
-
-      - name: Restore (Android only)
+      - name: Restore (Android)
         run: dotnet restore Grocery.App/Grocery.App.csproj -f net8.0-android
-
       - name: Build (Android)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-android --no-restore
 
@@ -34,21 +28,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use .NET 8 SDK
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-          global-json-file: global.json
-
       - name: Show SDK
         run: dotnet --info
-
       - name: Install MAUI iOS workload
         run: dotnet workload install maui maui-ios
-
-      - name: Restore (iOS only)
+      - name: Restore (iOS)
         run: dotnet restore Grocery.App/Grocery.App.csproj -f net8.0-ios
-
       - name: Build (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
