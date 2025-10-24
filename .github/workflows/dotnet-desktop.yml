@@ -17,7 +17,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          # expliciet om de .NET 8 SDK te gebruiken
+          dotnet-version: '8.0.x' 
 
       - name: Install MAUI Android workloads
         run: dotnet workload install maui-android
@@ -36,7 +37,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          #  expliciet om de .NET 8 SDK te gebruiken
+          dotnet-version: '8.0.x'
 
       - name: Install MAUI iOS workloads
         run: dotnet workload install maui-ios
@@ -45,4 +47,4 @@ jobs:
         run: dotnet restore Grocery.App/Grocery.App.csproj
 
       - name: Build MAUI App (iOS)
-        run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net9.0-ios --no-restore
+        run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
