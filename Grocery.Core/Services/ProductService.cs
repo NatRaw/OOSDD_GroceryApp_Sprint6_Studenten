@@ -1,6 +1,7 @@
 ﻿using Grocery.Core.Interfaces.Repositories;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
+using System;
 
 namespace Grocery.Core.Services
 {
@@ -13,29 +14,45 @@ namespace Grocery.Core.Services
             _productRepository = productRepository;
         }
 
+        // Get all products
         public List<Product> GetAll()
         {
             return _productRepository.GetAll();
         }
 
-        public Product Add(Product item)
+        // Add new product only Admin
+        public Product Add(Product item, string role = "User")
         {
-            throw new NotImplementedException();
+            // simple role check
+            if (role != "Admin")
+                throw new UnauthorizedAccessException("Alleen admins mogen producten toevoegen.");
+
+            // basic validation extra safety
+            if (string.IsNullOrWhiteSpace(item.Name))
+                throw new ArgumentException("Naam is verplicht.");
+            if (item.Price < 0)
+                throw new ArgumentException("Prijs moet 0 of hoger zijn.");
+
+            // save to db
+            return _productRepository.Add(item);
         }
 
-        public Product? Delete(Product item)
-        {
-            throw new NotImplementedException();
-        }
-
+        // Get one product by id
         public Product? Get(int id)
         {
-            throw new NotImplementedException();
+            return _productRepository.Get(id);
         }
 
+        // Update passthrough
         public Product? Update(Product item)
         {
             return _productRepository.Update(item);
+        }
+
+        // Delete passthrough
+        public Product? Delete(Product item)
+        {
+            return _productRepository.Delete(item);
         }
     }
 }
