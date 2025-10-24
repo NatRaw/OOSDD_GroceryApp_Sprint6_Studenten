@@ -12,15 +12,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pin SDK to .NET 8 even if the runner has .NET 9
+      - name: Write global.json (pin to .NET 8)
+        run: |
+          cat > global.json <<'JSON'
+          {
+            "sdk": {
+              "version": "8.0.409",
+              "rollForward": "disable"
+            }
+          }
+          JSON
+
       - name: Setup .NET (from global.json)
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json  # SDK 8.0.409 is used
-      # workloads
+          global-json-file: global.json
+
       - name: Install MAUI Android workloads
         run: dotnet workload install maui maui-android
 
-      - name: Restore dependencies (Android)
+      - name: Restore dependencies (Android only)
         run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-android -p:CheckEolTargetFramework=false
 
       - name: Build MAUI App (Android)
@@ -31,6 +43,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Write global.json (pin to .NET 8)
+        run: |
+          cat > global.json <<'JSON'
+          {
+            "sdk": {
+              "version": "8.0.409",
+              "rollForward": "disable"
+            }
+          }
+          JSON
+
       - name: Setup .NET (from global.json)
         uses: actions/setup-dotnet@v4
         with:
@@ -39,9 +62,8 @@ jobs:
       - name: Install MAUI iOS workloads
         run: dotnet workload install maui maui-ios
 
-      - name: Restore dependencies (iOS)
+      - name: Restore dependencies (iOS only)
         run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-ios -p:CheckEolTargetFramework=false
 
       - name: Build MAUI App (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
-
