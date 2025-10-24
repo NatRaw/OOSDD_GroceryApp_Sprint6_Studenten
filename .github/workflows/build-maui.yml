@@ -1,0 +1,49 @@
+
+name: Build Grocery MAUI App (Android + iOS)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  android:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install MAUI Android workloads
+        run: dotnet workload install maui maui-android
+
+      - name: Restore dependencies (Android)
+        run: dotnet restore Grocery.App/Grocery.App.csproj
+
+      - name: Build MAUI App (Android)
+        run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-android --no-restore
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install MAUI iOS workloads
+        run: dotnet workload install maui maui-ios
+
+      - name: Restore dependencies (iOS)
+        run: dotnet restore Grocery.App/Grocery.App.csproj
+
+      - name: Build MAUI App (iOS)
+        run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
