@@ -1,10 +1,13 @@
+
 name: Build Grocery MAUI App (Android + iOS)
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   android:
@@ -12,20 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Pin SDK to .NET 8 no global.json needed
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.409'
+          dotnet-version: '8.0.x'
 
       - name: Install MAUI Android workloads
         run: dotnet workload install maui maui-android
 
-      # Restore ONLY Android
-      - name: Restore (Android only)
-        run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-android -p:CheckEolTargetFramework=false
+      - name: Restore dependencies (Android)
+        run: dotnet restore Grocery.App/Grocery.App.csproj
 
-      - name: Build (Android)
+      - name: Build MAUI App (Android)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-android --no-restore
 
   ios:
@@ -33,17 +34,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.409'
+          dotnet-version: '8.0.x'
 
       - name: Install MAUI iOS workloads
         run: dotnet workload install maui maui-ios
 
-      # Restore ONLY iOS
-      - name: Restore (iOS only)
-        run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-ios -p:CheckEolTargetFramework=false
+      - name: Restore dependencies (iOS)
+        run: dotnet restore Grocery.App/Grocery.App.csproj
 
-      - name: Build (iOS)
+      - name: Build MAUI App (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
