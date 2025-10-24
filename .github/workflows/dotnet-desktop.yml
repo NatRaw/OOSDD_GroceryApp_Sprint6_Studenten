@@ -1,49 +1,61 @@
-
 name: Build Grocery MAUI App (Android + iOS)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, hotfix ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   android:
     runs-on: windows-latest
+    env:
+      DOTNET_MULTILEVEL_LOOKUP: 0     # don't fall back to global Program Files 9 net
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.413'   # explicit 8 net
 
-      - name: Install MAUI Android workloads
+      - name: Show SDK (debug)
+        run: dotnet --info
+
+      - name: Install MAUI Android workload
         run: dotnet workload install maui maui-android
 
-      - name: Restore dependencies (Android)
-        run: dotnet restore Grocery.App/Grocery.App.csproj
+      # IMPORTANT: restore only Android TFM so iOS/maccatalyst aren't evaluated
+      - name: Restore (Android only)
+        run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-android
 
-      - name: Build MAUI App (Android)
+      - name: Build (Android)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-android --no-restore
 
   ios:
     runs-on: macos-latest
+    env:
+      DOTNET_MULTILEVEL_LOOKUP: 0
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.413'
 
-      - name: Install MAUI iOS workloads
+      - name: Show SDK (debug)
+        run: dotnet --info
+
+      - name: Install MAUI iOS workload
         run: dotnet workload install maui maui-ios
 
-      - name: Restore dependencies (iOS)
-        run: dotnet restore Grocery.App/Grocery.App.csproj
+      # Restore only iOS TFM
+      - name: Restore (iOS only)
+        run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-ios
 
-      - name: Build MAUI App (iOS)
+      - name: Build (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
+
