@@ -12,30 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Pin SDK to .NET 8 even if the runner has .NET 9
-      - name: Write global.json (pin to .NET 8)
-        run: |
-          cat > global.json <<'JSON'
-          {
-            "sdk": {
-              "version": "8.0.409",
-              "rollForward": "disable"
-            }
-          }
-          JSON
-
-      - name: Setup .NET (from global.json)
+      # Pin SDK to .NET 8 no global.json needed
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: '8.0.409'
 
       - name: Install MAUI Android workloads
         run: dotnet workload install maui maui-android
 
-      - name: Restore dependencies (Android only)
+      # Restore ONLY Android
+      - name: Restore (Android only)
         run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-android -p:CheckEolTargetFramework=false
 
-      - name: Build MAUI App (Android)
+      - name: Build (Android)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-android --no-restore
 
   ios:
@@ -43,27 +33,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Write global.json (pin to .NET 8)
-        run: |
-          cat > global.json <<'JSON'
-          {
-            "sdk": {
-              "version": "8.0.409",
-              "rollForward": "disable"
-            }
-          }
-          JSON
-
-      - name: Setup .NET (from global.json)
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: '8.0.409'
 
       - name: Install MAUI iOS workloads
         run: dotnet workload install maui maui-ios
 
-      - name: Restore dependencies (iOS only)
+      # Restore ONLY iOS
+      - name: Restore (iOS only)
         run: dotnet restore Grocery.App/Grocery.App.csproj -p:TargetFramework=net8.0-ios -p:CheckEolTargetFramework=false
 
-      - name: Build MAUI App (iOS)
+      - name: Build (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net8.0-ios --no-restore
