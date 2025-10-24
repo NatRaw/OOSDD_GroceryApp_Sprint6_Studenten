@@ -46,4 +46,3 @@ jobs:
 
       - name: Build MAUI App (iOS)
         run: dotnet build Grocery.App/Grocery.App.csproj -c Release -f net9.0-ios --no-restore
-
